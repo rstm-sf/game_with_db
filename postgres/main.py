@@ -53,7 +53,7 @@ def create_db():
             print('Database connection closed.')
 
 
-def insert_table_reg():
+def insert_table():
     reg = set()
     group = set()
     category = set()
