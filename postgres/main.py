@@ -59,15 +59,16 @@ def insert_table():
     category = set()
     gender = set()
     crimestatsocial = list()
-    for line in open('../crimestatsocial_final.json', 'r'):
-        j = json.loads(line)
-        reg.add((j["reg_id"], j["reg_name"]))
-        group.add((j["group_id"], j["group_name"]))
-        category.add((j["category"], ))
-        gender.add((j["gender"], ))
-        crimestatsocial.append(
-            (j["reg_id"], j["year"], j["group_id"],
-            j["category"], j["gender"], j["value"], ))
+    with open('../crimestatsocial_final.json') as f:
+        for line in f:
+            j = json.loads(line)
+            reg.add((j["reg_id"], j["reg_name"]))
+            group.add((j["group_id"], j["group_name"]))
+            category.add((j["category"], ))
+            gender.add((j["gender"], ))
+            crimestatsocial.append(
+                (j["reg_id"], j["year"], j["group_id"],
+                j["category"], j["gender"], j["value"], ))
     conn = None
     try:
         params = config()
