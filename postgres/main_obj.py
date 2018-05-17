@@ -10,16 +10,16 @@ def create_db():
     commands = (
         """CREATE TABLE "region" (
             id SERIAL PRIMARY KEY,
-            name VARCHAR(64) NOT NULL);""",
+            name text NOT NULL);""",
         """CREATE TABLE "group" (
             id SERIAL PRIMARY KEY,
-            name VARCHAR(256) NOT NULL);""",
+            name text NOT NULL);""",
         """CREATE TABLE "crimestatsocial" (
             id SERIAL PRIMARY KEY,
             reg_id INTEGER NOT NULL,
-            year INTEGER NOT NULL,
+            year smallint NOT NULL,
             group_id INTEGER NOT NULL,
-            category VARCHAR(256) NOT NULL,
+            category text NOT NULL,
             gender CHAR(8) NOT NULL,
             value INTEGER NOT NULL,
             FOREIGN KEY (reg_id)
@@ -30,7 +30,7 @@ def create_db():
                 ON UPDATE CASCADE ON DELETE CASCADE);""")
     conn = None
     try:
-        params = config()
+        params = config(section="obj_postgres")
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
         for command in commands:
@@ -60,7 +60,7 @@ def insert_table():
                 crimestatsocial.append(
                     (int(j["reg_id"]), j["year"], j["group_id"],
                     j["category"], j["gender"], j["value"], ))
-        params = config()
+        params = config(section="obj_postgres")
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
         for item in reg:
