@@ -1,12 +1,13 @@
 import json
-import psycopg2
 import sys
 
-sys.path.append('../')
+import psycopg2
+
+sys.path.append('../config/')
 from config import config
 
 
-def create_db():
+def _create_db():
     commands = (
         """CREATE TABLE "region" (
             id SERIAL PRIMARY KEY,
@@ -46,13 +47,13 @@ def create_db():
                 params["database"]))
 
 
-def insert_table():
+def _insert_table():
     reg = set()
     group = set()
     crimestatsocial = list()
     conn = None
     try:
-        with open('../crimestatsocial_final.json') as f:
+        with open('../dataset/crimestatsocial_final.json') as f:
             for line in f:
                 j = json.loads(line)
                 reg.add((int(j["reg_id"]), j["reg_name"]))
@@ -85,5 +86,5 @@ def insert_table():
 
 
 if __name__ == '__main__':
-    create_db()
-    insert_table()
+    _create_db()
+    _insert_table()

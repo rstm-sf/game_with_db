@@ -3,7 +3,7 @@ import sys
 
 from pymongo import MongoClient
 
-sys.path.append('../')
+sys.path.append('../config/')
 from config import config
 
 
@@ -21,7 +21,7 @@ def conn_db():
 def _create_insert_db():
     db = conn_db()
     table = db.table
-    with open('../crimestatsocial_final.json') as f:
+    with open('../dataset/crimestatsocial_final.json') as f:
         for line in f:
             data = json.loads(line)
             table.insert_one(_refactor_json(data))

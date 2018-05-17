@@ -3,7 +3,7 @@ import sys
 
 from arango import ArangoClient
 
-sys.path.append('../')
+sys.path.append('../config/')
 from config import config
 
 
@@ -28,7 +28,7 @@ def _create_insert_graph():
         to_vertex_collections=['group']
     )
 
-    with open('../crimestatsocial_final.json') as f:
+    with open('../dataset/crimestatsocial_final.json') as f:
         i = 1
         for line in f:
             data = json.loads(line)
