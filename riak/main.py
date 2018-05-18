@@ -14,3 +14,4 @@ if __name__ == '__main__':
             key.store()
             i += 1
     print(bucket.get('1').data)
+    client.close()
