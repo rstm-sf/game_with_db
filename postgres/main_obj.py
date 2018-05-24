@@ -9,20 +9,20 @@ from config import config
 
 def _create_db():
     commands = (
-        """CREATE TABLE "region" (
+        """
+        CREATE TABLE "region" (
             id SERIAL PRIMARY KEY,
-            name text NOT NULL);""",
-        """CREATE TABLE "group" (
+            name VARCHAR(64) NOT NULL);""",
+        """
+        CREATE TABLE "group" (
             id SERIAL PRIMARY KEY,
-            name text NOT NULL);""",
-        """CREATE TABLE "crimestatsocial" (
+            name VARCHAR(256) NOT NULL);""",
+        """
+        CREATE TABLE "crimestatsocial" (
             id SERIAL PRIMARY KEY,
+            data json NOT NULL,
             reg_id INTEGER NOT NULL,
-            year smallint NOT NULL,
             group_id INTEGER NOT NULL,
-            category text NOT NULL,
-            gender CHAR(8) NOT NULL,
-            value INTEGER NOT NULL,
             FOREIGN KEY (reg_id)
                 REFERENCES "region" (id)
                 ON UPDATE CASCADE ON DELETE CASCADE,
@@ -48,32 +48,38 @@ def _create_db():
 
 
 def _insert_table():
-    reg = set()
-    group = set()
-    crimestatsocial = list()
     conn = None
     try:
-        with open('../dataset/crimestatsocial_final.json') as f:
-            for line in f:
-                j = json.loads(line)
-                reg.add((int(j["reg_id"]), j["reg_name"]))
-                group.add((j["group_id"], j["group_name"]))
-                crimestatsocial.append(
-                    (int(j["reg_id"]), j["year"], j["group_id"],
-                    j["category"], j["gender"], j["value"], ))
+        region = set()
+        group = set()
         params = config(section="obj_postgres")
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        for item in reg:
-            cur.execute("""INSERT INTO "region" VALUES (%s, %s)""", item)
-        for item in group:
-            cur.execute("""INSERT INTO "group" VALUES (%s, %s)""", item)
-        for item in crimestatsocial:
-            cur.execute("""
-                INSERT INTO
-                    "crimestatsocial"
-                    (reg_id, year, group_id, category, gender, value)
-                VALUES (%s, %s, %s, %s, %s, %s)""", item)
+        with open('../dataset/crimestatsocial_final.json') as f:
+            for line in f:
+                j = json.loads(line)
+
+                reg_id = j.pop(u'reg_id')
+                reg_name = j.pop(u'reg_name')
+                if reg_id not in region:
+                    region.add(reg_id)
+                    cur.execute(
+                        """INSERT INTO "region" VALUES (%s, %s)""",
+                        (reg_id, reg_name, ))
+
+                group_id = j.pop(u'group_id')
+                group_name = j.pop(u'group_name')
+                if group_id not in group:
+                    group.add(group_id)
+                    cur.execute(
+                        """INSERT INTO "group" VALUES (%s, %s)""",
+                        (group_id, group_name, ))
+
+                cur.execute(
+                    """
+                    INSERT INTO "crimestatsocial" (data, reg_id, group_id)
+                    VALUES (%s, %s, %s)""",
+                    (json.dumps(j), reg_id, group_id, ))
         cur.close()
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
