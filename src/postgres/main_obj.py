@@ -3,7 +3,7 @@ import sys
 
 import psycopg2
 
-sys.path.append('../config/')
+sys.path.append('../../config/')
 from config import config
 
 
@@ -31,7 +31,7 @@ def _create_db():
                 ON UPDATE CASCADE ON DELETE CASCADE);""")
     conn = None
     try:
-        params = config(section="obj_postgres")
+        params = config('../../config/database.ini', "obj_postgres")
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
         for command in commands:
@@ -52,10 +52,10 @@ def _insert_table():
     try:
         region = set()
         group = set()
-        params = config(section="obj_postgres")
+        params = config('../../config/database.ini', "obj_postgres")
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        with open('../dataset/crimestatsocial_final.json') as f:
+        with open('../../dataset/crimestatsocial_final.json') as f:
             for line in f:
                 j = json.loads(line)
 

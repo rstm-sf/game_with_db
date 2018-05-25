@@ -3,7 +3,7 @@ import sys
 
 import pymonetdb
 
-sys.path.append('../config/')
+sys.path.append('../../config/')
 from config import config
 
 
@@ -21,7 +21,7 @@ def _create_insert_table():
         );"""
     conn = None
     try:
-        params = config(section='monetdb')
+        params = config('../../config/database.ini', 'monetdb')
         conn = pymonetdb.connect(
             database=params["database"],
             hostname=params["hostname"],
@@ -30,7 +30,7 @@ def _create_insert_table():
         cur = conn.cursor()
         cur.arraysize = 100
         cur.execute(command)
-        with open('../dataset/crimestatsocial_final.json') as f:
+        with open('../../dataset/crimestatsocial_final.json') as f:
             for line in f:
                 parameters = tuple(json.loads(line).values())
                 cur.execute("""

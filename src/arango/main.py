@@ -3,14 +3,14 @@ import sys
 
 from arango import ArangoClient
 
-sys.path.append('../config/')
+sys.path.append('../../config/')
 from config import config
 
 
 def _create_insert_graph():
     client = ArangoClient()
 
-    params = config(section="arangodb")
+    params = config('../../config/database.ini', "arangodb")
     db = client.db(*tuple(params.values()))
 
     graph = db.create_graph('crimestatsocial')
@@ -28,7 +28,7 @@ def _create_insert_graph():
         to_vertex_collections=['group']
     )
 
-    with open('../dataset/crimestatsocial_final.json') as f:
+    with open('../../dataset/crimestatsocial_final.json') as f:
         i = 1
         for line in f:
             data = json.loads(line)
